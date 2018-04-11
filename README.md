@@ -1,4 +1,5 @@
 # KumuluzEE gRPC
+[![Build Status](https://img.shields.io/travis/kumuluz/kumuluzee-grpc/master.svg?style=flat)](https://travis-ci.org/kumuluz/kumuluzee-grpc)
 > KumuluzEE gRPC project for enabling gRPC protocol for KumuluzEE microservices.
 
 *Note: Requires JDK 8 (JDK 9 is currently not supported due to Netty server using methods deprecated in JDK 9)*

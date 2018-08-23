@@ -13,7 +13,8 @@ cache:
 install: mvn clean install -DskipTests=true -V -U
 script: mvn test
 after_success:
-- if [[ $TRAVIS_PULL_REQUEST == "false" && ($TRAVIS_BRANCH == "master" || $TRAVIS_TAG)
-  ]]; then openssl aes-256-cbc -K $encrypted_5c8d100818d6_key -iv $encrypted_5c8d100818d6_iv
-  -in gpg.tar.gz.enc -out gpg.tar.gz -d; tar xvf gpg.tar.gz; mvn source:jar javadoc:jar
-  deploy -Pdeploy -DskipTests=true --settings ./settings.xml; fi
+- if [[ $TRAVIS_PULL_REQUEST == "false" && ($TRAVIS_BRANCH == "master" || $TRAVIS_TAG) ]]; then
+    openssl aes-256-cbc -K $encrypted_41a6098932f4_key -iv $encrypted_41a6098932f4_iv -in gpg.tar.gz.enc -out gpg.tar.gz -d;
+    tar xvf gpg.tar.gz;
+    mvn source:jar javadoc:jar deploy -Pdeploy -DskipTests=true --settings ./settings.xml;
+  fi

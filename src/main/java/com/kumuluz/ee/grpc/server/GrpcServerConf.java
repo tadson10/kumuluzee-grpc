@@ -21,8 +21,7 @@
 package com.kumuluz.ee.grpc.server;
 
 import com.kumuluz.ee.grpc.utils.GrpcServiceDef;
-import io.grpc.Server;
-import io.netty.handler.ssl.ClientAuth;
+import io.grpc.netty.shaded.io.netty.handler.ssl.ClientAuth;
 
 import java.io.File;
 import java.util.Set;
@@ -40,6 +39,7 @@ public class GrpcServerConf {
 
     private Set<GrpcServiceDef> services;
 
+    private boolean httpsEnabled;
     private File certFile;
     private File privateKeyFile;
     private File chainFile;
@@ -47,9 +47,14 @@ public class GrpcServerConf {
 
     private Long timeout;
 
-    public GrpcServerConf(int port, File certFile,
+    public GrpcServerConf(int port, Long timeout) {
+        this(port, false, null, null, null, null, timeout);
+    }
+
+    public GrpcServerConf(int port, boolean httpsEnabled, File certFile,
                           File privateKeyFile, File chainFile, ClientAuth mutualTLS, Long timeout) {
         this.port = port;
+        this.httpsEnabled = httpsEnabled;
         this.certFile = certFile;
         this.privateKeyFile = privateKeyFile;
         this.chainFile = chainFile;
@@ -63,6 +68,14 @@ public class GrpcServerConf {
 
     public void setPort(int port) {
         this.port = port;
+    }
+
+    public boolean isHttpsEnabled() {
+        return httpsEnabled;
+    }
+
+    public void setHttpsEnabled(boolean httpsEnabled) {
+        this.httpsEnabled = httpsEnabled;
     }
 
     public Set<GrpcServiceDef> getServices() {

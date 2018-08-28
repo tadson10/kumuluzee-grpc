@@ -20,8 +20,6 @@
  */
 package com.kumuluz.ee.grpc.server;
 
-import com.kumuluz.ee.common.config.EeConfig;
-import com.kumuluz.ee.common.config.ServerConfig;
 import com.kumuluz.ee.configuration.utils.ConfigurationUtil;
 import com.kumuluz.ee.grpc.annotations.GrpcInterceptor;
 import com.kumuluz.ee.grpc.annotations.GrpcService;
@@ -29,7 +27,7 @@ import com.kumuluz.ee.grpc.server.auth.JWTServerInterceptor;
 import com.kumuluz.ee.grpc.utils.GrpcServiceDef;
 import io.grpc.BindableService;
 import io.grpc.ServerInterceptor;
-import io.netty.handler.ssl.ClientAuth;
+import io.grpc.netty.shaded.io.netty.handler.ssl.ClientAuth;
 
 import java.io.File;
 import java.io.IOException;
@@ -57,20 +55,27 @@ public class GrpcServerInit {
         logger.info("gRPC Server initialization");
 
         ConfigurationUtil confUtil = ConfigurationUtil.getInstance();
+        GrpcServerConf grpcServerConf;
+
+        File chainFile;
+        File keyFile;
+        File caFile;
 
         int port = setPort(confUtil);
-        Optional<String> certChainFile = confUtil.get("kumuluzee.grpc.server.certFile");
-        Optional<String> privateKeyFile = confUtil.get("kumuluzee.grpc.server.keyFile");
-        Optional<String> caCertFile = confUtil.get("kumuluzee.grpc.server.chainFile");
-
-        File chainFile = openFile(certChainFile);
-        File keyFile = openFile(privateKeyFile);
-        File caFile = openFile(caCertFile);
-
         long timeout = setTimeout(confUtil);
 
-        GrpcServerConf grpcServerConf = new GrpcServerConf(port, chainFile, keyFile, caFile,
-                setClientAuth(confUtil), timeout);
+        if (confUtil.getBoolean("kumuluzee.grpc.server.https.enable").orElse(false)) {
+            Optional<String> certChainFile = confUtil.get("kumuluzee.grpc.server.https.certFile");
+            Optional<String> privateKeyFile = confUtil.get("kumuluzee.grpc.server.https.keyFile");
+            Optional<String> caCertFile = confUtil.get("kumuluzee.grpc.server.https.chainFile");
+            chainFile = openFile(certChainFile);
+            keyFile = openFile(privateKeyFile);
+            caFile = openFile(caCertFile);
+            grpcServerConf = new GrpcServerConf(port, true, chainFile, keyFile, caFile,
+                    setClientAuth(confUtil), timeout);
+        } else {
+            grpcServerConf = new GrpcServerConf(port, timeout);
+        }
 
         Set<GrpcServiceDef> services = new HashSet<>();
 
@@ -91,20 +96,17 @@ public class GrpcServerInit {
     }
 
     private int setPort(ConfigurationUtil confUtil) {
-        Optional<Integer> grpcPort = confUtil.getInteger("kumuluzee.grpc.server.port");
+        Integer httpPort = confUtil.getInteger("kumuluzee.grpc.server.http.port").orElse(0);
+        Integer httpsPort = confUtil.getInteger("kumuluzee.grpc.server.https.port").orElse(0);
 
-        ServerConfig conf = EeConfig.getInstance().getServer();
-        Integer httpPort = conf.getHttp().getPort();
-        Integer httpsPort = conf.getHttps().getPort();
-
-        if (grpcPort.isPresent()) {
-            if (!httpPort.equals(grpcPort.get()) && !httpsPort.equals(grpcPort.get())) {
-                return grpcPort.get();
-            } else {
-                return GRPC_DEFAULT_PORT;
-            }
+        if (confUtil.getBoolean("kumuluzee.grpc.server.https.enable").orElse(false)) {
+            return httpsPort;
         } else {
-            return GRPC_DEFAULT_PORT;
+            if (httpPort.equals(0)) {
+                return GRPC_DEFAULT_PORT;
+            } else {
+                return httpPort;
+            }
         }
     }
 

@@ -36,7 +36,8 @@ class Initializer {
     public static void initialize() {
         ConfigurationUtil confUtil = ConfigurationUtil.getInstance();
 
-        if (confUtil.get("kumuluzee.grpc.server.port").isPresent()) {
+        if (confUtil.get("kumuluzee.grpc.server.http.port").isPresent() ||
+                confUtil.get("kumuluzee.grpc.server.https.port").isPresent()) {
             new GrpcServerInit().initialize();
         }
 

@@ -77,11 +77,18 @@ kumuluzee:
   name: gRPC sample
   grpc:
     server:
-      port: 8081
-      certFile: /path/to/cert/file
-      keyFile: /path/to/key/file
-      chainFile: /path/to/chain/file
-      mutualTLS: optional
+      http:
+        port: 8081
+      https:
+        enable: true
+        port: 8443
+        certFile: /path/to/cert/file
+        keyFile: /path/to/key/file
+        chainFile: /path/to/chain/file
+        mutualTLS: optional
+      auth:
+        public-key: MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAnOTgnGBISzm3pKuG8QXMVm6eEuTZx8Wqc8D9gy7vArzyE5QC/bVJNFwlz...
+        issuer: http://example.org/auth
     clients:
     - name: client1
       port: 8081
@@ -122,7 +129,7 @@ It will locate .proto files in /src/main/proto and generated Java classes.
     <plugin>
       <groupId>org.xolstice.maven.plugins</groupId>
       <artifactId>protobuf-maven-plugin</artifactId>
-      <version>0.5.0</version>
+      <version>0.5.1</version>
       <configuration>
         <protocArtifact>com.google.protobuf:protoc:3.5.1-1:exe:${os.detected.classifier}</protocArtifact>
         <pluginId>grpc-java</pluginId>

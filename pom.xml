@@ -24,7 +24,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
         <grpc.version>1.14.0</grpc.version>
-        <kumuluzee.version>3.0.0-beta.3</kumuluzee.version>
+        <kumuluzee.version>3.0.0-SNAPSHOT</kumuluzee.version>
         <java-jwt.version>3.3.0</java-jwt.version>
 
         <maven-compiler-plugin.version>3.8.0</maven-compiler-plugin.version>

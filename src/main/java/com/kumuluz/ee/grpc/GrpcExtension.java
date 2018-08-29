@@ -62,4 +62,10 @@ public class GrpcExtension implements Extension {
         Initializer.initialize();
         logger.info("gRPC Extension initialized");
     }
+
+    @Override
+    public boolean isEnabled() {
+        ConfigurationUtil confUtil = ConfigurationUtil.getInstance();
+        return confUtil.getBoolean("kumuluzee.grpc.enabled").orElse(true);
+    }
 }

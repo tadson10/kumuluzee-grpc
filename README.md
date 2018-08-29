@@ -77,6 +77,7 @@ kumuluzee:
   name: gRPC sample
   grpc:
     server:
+      base-url: http://localhost:8080
       http:
         port: 8081
       https:
@@ -109,6 +110,14 @@ When using secure connection via TLS, "certFile" and "keyFile" must be present
 in the server section and "chainFile" in client section. If mutual TLS connection 
 is required "chainFile" path must be set. Default value for "mutualTLS" parameter is "optional".
 Additionally "keyFile" and "chainFile" must be set on client side.
+
+Extension can be disabled by setting `enabled` property to `false` (defaults to `true`).
+
+```yaml
+kumuluzee:
+  grpc:
+    enabled: false
+```
 
 
 ### Generate Java classes from Protobuf files

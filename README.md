@@ -2,7 +2,6 @@
 [![Build Status](https://img.shields.io/travis/kumuluz/kumuluzee-grpc/master.svg?style=flat)](https://travis-ci.org/kumuluz/kumuluzee-grpc)
 > KumuluzEE gRPC project for enabling gRPC protocol for KumuluzEE microservices.
 
-*Note: Requires JDK 8 (JDK 9 is currently not supported due to Netty server using methods deprecated in JDK 9)*
 ## Usage
 
 You can enable the KumuluzEE gRPC extension by adding the following dependency:
@@ -101,10 +100,12 @@ kumuluzee:
 
 Example shows all available options for extension. Required fields are:
 * server
-    * port
-* client (required if using GrpcClientConf helper class)
-    * client.port
-    * client.address
+    * http
+        * port
+* clients (required if using GrpcClientConf helper class)
+    * client[i].name
+    * client[i].port
+    * client[i].address
  
 When using secure connection via TLS, "certFile" and "keyFile" must be present
 in the server section and "chainFile" in client section. If mutual TLS connection 

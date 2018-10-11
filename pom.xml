@@ -23,9 +23,10 @@
         <maven.compiler.target>1.8</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
-        <grpc.version>1.14.0</grpc.version>
-        <kumuluzee.version>3.0.0-SNAPSHOT</kumuluzee.version>
-        <java-jwt.version>3.3.0</java-jwt.version>
+        <grpc.version>1.15.1</grpc.version>
+        <kumuluzee.version>3.0.0</kumuluzee.version>
+        <java-jwt.version>3.4.0</java-jwt.version>
+        <netty.tcnative.boringssl.static.version>2.0.7.Final</netty.tcnative.boringssl.static.version>
 
         <maven-compiler-plugin.version>3.8.0</maven-compiler-plugin.version>
         <nexus.staging.plugin.version>1.6.8</nexus.staging.plugin.version>
@@ -85,7 +86,7 @@
         <dependency>
             <groupId>io.netty</groupId>
             <artifactId>netty-tcnative-boringssl-static</artifactId>
-            <version>2.0.7.Final</version>
+            <version>${netty.tcnative.boringssl.static.version}</version>
         </dependency>
 
         <!-- gRPC implementation -->

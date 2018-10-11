@@ -143,7 +143,7 @@ It will locate .proto files in /src/main/proto and generated Java classes.
       <configuration>
         <protocArtifact>com.google.protobuf:protoc:3.5.1-1:exe:${os.detected.classifier}</protocArtifact>
         <pluginId>grpc-java</pluginId>
-        <pluginArtifact>io.grpc:protoc-gen-grpc-java:1.9.0:exe:${os.detected.classifier}</pluginArtifact>
+        <pluginArtifact>io.grpc:protoc-gen-grpc-java:1.15.1:exe:${os.detected.classifier}</pluginArtifact>
       </configuration>
       <executions>
         <execution>
@@ -167,7 +167,3 @@ CDI lookup:
 ```java
 UserBean bean = CDI.current().select(UserBean.class).get();
 ``` 
-
-
-
-

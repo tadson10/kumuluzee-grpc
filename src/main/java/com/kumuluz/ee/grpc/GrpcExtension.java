@@ -22,24 +22,11 @@ package com.kumuluz.ee.grpc;
 
 import com.kumuluz.ee.common.Extension;
 import com.kumuluz.ee.common.config.EeConfig;
-import com.kumuluz.ee.common.dependencies.EeComponentDependencies;
 import com.kumuluz.ee.common.dependencies.EeComponentDependency;
 import com.kumuluz.ee.common.dependencies.EeComponentType;
 import com.kumuluz.ee.common.dependencies.EeExtensionDef;
 import com.kumuluz.ee.common.wrapper.KumuluzServerWrapper;
 import com.kumuluz.ee.configuration.utils.ConfigurationUtil;
-import com.kumuluz.ee.grpc.annotations.GrpcInterceptor;
-import com.kumuluz.ee.grpc.annotations.GrpcService;
-import com.kumuluz.ee.grpc.server.GrpcServer;
-import com.kumuluz.ee.grpc.server.GrpcServerInit;
-import com.kumuluz.ee.grpc.utils.GrpcServiceDef;
-import io.grpc.ServerInterceptor;
-
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.*;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**

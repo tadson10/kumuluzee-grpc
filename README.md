@@ -2,7 +2,6 @@
 [![Build Status](https://img.shields.io/travis/kumuluz/kumuluzee-grpc/master.svg?style=flat)](https://travis-ci.org/kumuluz/kumuluzee-grpc)
 > KumuluzEE gRPC project for enabling gRPC protocol for KumuluzEE microservices.
 
-> Currently only supported on JDK 8. Will be updated in near future to support JDK9+.
 ## Usage
 
 You can enable the KumuluzEE gRPC extension by adding the following dependency:

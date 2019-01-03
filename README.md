@@ -7,11 +7,11 @@
 
 You can enable the KumuluzEE gRPC extension by adding the following dependency:
 ```xml
-<dependecy>
+<dependency>
     <groupId>com.kumuluz.ee.grpc</groupId>
     <artifactId>kumuluzee-grpc</artifactId>
     <version>${kumuluz-grpc.version}</version>
-</dependecy>
+</dependency>
 ```
 
 ## Server

@@ -20,11 +20,15 @@
  */
 package com.kumuluz.ee.grpc.server.auth;
 
+import com.auth0.jwk.*;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.JWTVerifier;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.auth0.jwt.interfaces.DecodedJWT;
+import java.security.interfaces.RSAPublicKey;
+import java.util.logging.Logger;
+
 
 /***
  * JWTAuthorization class
@@ -33,16 +37,69 @@ import com.auth0.jwt.interfaces.DecodedJWT;
  * @since 1.0.0
  */
 public class JWTAuthorization {
+    private static final Logger logger = Logger.getLogger(JWTAuthorization.class.getName());
 
+    /**
+     * Validates JWT token.
+     *
+     * @param token            JWT token
+     * @param context          JWT context
+     * @throws JWTVerificationException if token is not valid
+     */
     public static void validateToken(String token, JWTContext context) throws JWTVerificationException {
-        Algorithm algorithm = Algorithm.RSA256(context.getDecodedPublicKey(), null);
-        JWTVerifier verifier = JWT.require(algorithm)
-                .withIssuer(context.getIssuer())
-                .build();
+        try {
+            Algorithm algorithm = null;
+            DecodedJWT jwt = JWT.decode(token);
+            if (context.getJwkProvider() != null) {
+                // Jwks URI was provided OR
+                // the provided public key is in JWK/JWKS format
+                algorithm = getJwksAlgorithm(jwt, context);
+            } else if(context.getDecodedPublicKey() != null) {
+                // Public key was provided in PEM format
+                algorithm = Algorithm.RSA256(context.getDecodedPublicKey(), null);
+            }
 
-        DecodedJWT jwt;
-        jwt = verifier.verify(token);
+            if (algorithm != null) {
+                JWTVerifier verifier = JWT.require(algorithm)
+                    .withIssuer(context.getIssuer())
+                    .acceptLeeway(context.getMaximumLeeway())
+                    .build();
 
-        context.setToken(jwt);
+                try{
+                    verifier.verify(token);
+                } catch (JWTVerificationException e) {
+                    logger.severe("Exception: " + e.getMessage());
+                    throw e;
+                }
+
+            } else {
+                logger.severe("Neither kumuluzee.grpc.server.auth.jwks-uri nor kumuluzee.grpc.server.auth.public-key were configured.");
+                throw new IllegalStateException("Neither kumuluzee.grpc.server.auth.jwks-uri nor kumuluzee.grpc.server.auth.public-key were configured.");
+            }
+
+            context.setToken(jwt);
+
+        } catch (JwkException e) {
+            logger.severe("Exception: " + e.getMessage());
+            throw new RuntimeException(e);
+        }
+    }
+
+    /**
+     * Get JWK algorithm.
+     *
+     * @param jwt              JWT token
+     * @param context          JWT context
+     * @return Algorithm
+     * @throws JwkException if JWK is not found
+     */
+    public static Algorithm getJwksAlgorithm(DecodedJWT jwt, JWTContext context) throws JwkException {
+        try {
+            Jwk jwk = context.getJwkProvider().get(jwt.getKeyId());
+            return Algorithm.RSA256((RSAPublicKey) jwk.getPublicKey(), null);
+        } catch (Exception e) {
+            logger.severe("Exception: " + e.getMessage());
+            throw e;
+        }
     }
 }

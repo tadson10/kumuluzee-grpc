@@ -31,6 +31,7 @@ import io.grpc.netty.shaded.io.netty.handler.ssl.SslContextBuilder;
 import javax.net.ssl.SSLException;
 import java.io.File;
 import java.util.NoSuchElementException;
+import java.util.concurrent.TimeUnit;
 import java.util.logging.Logger;
 
 /***
@@ -73,18 +74,36 @@ public class GrpcClient {
         try {
             SslContext sslContext = buildTLSContext();
             if (sslContext != null) {
-                channel = NettyChannelBuilder.forAddress(config.getAddress(), config.getPort())
+                NettyChannelBuilder nettyChannelBuilder = NettyChannelBuilder.forAddress(config.getAddress(), config.getPort())
                         .negotiationType(NegotiationType.TLS)
-                        .sslContext(sslContext)
-                        .build();
+                        .sslContext(sslContext);
+
+                if (config.getKeepAlive() > 0) {
+                    nettyChannelBuilder.keepAliveTime(config.getKeepAlive(), TimeUnit.MILLISECONDS);
+                }
+                if (config.getKeepAliveTimeout() > 0) {
+                    nettyChannelBuilder.keepAliveTimeout(config.getKeepAliveTimeout(), TimeUnit.MILLISECONDS);
+                }
+                
+                channel = nettyChannelBuilder.build();
                 return;
             }
         } catch (SSLException | NoSuchElementException e) {
             e.printStackTrace();
         }
-        channel = ManagedChannelBuilder.forAddress(config.getAddress(), config.getPort())
-                .usePlaintext()
-                .build();
+
+        ManagedChannelBuilder managedChannelBuilder = ManagedChannelBuilder
+            .forAddress(config.getAddress(), config.getPort())
+            .usePlaintext();
+
+        if (config.getKeepAlive() > 0) {
+            managedChannelBuilder.keepAliveTime(config.getKeepAlive(), TimeUnit.MILLISECONDS);
+        }
+        if (config.getKeepAliveTimeout() > 0) {
+            managedChannelBuilder.keepAliveTimeout(config.getKeepAliveTimeout(), TimeUnit.MILLISECONDS);
+        }
+
+        channel = managedChannelBuilder.build();
     }
 
     public ManagedChannel getChannel() {

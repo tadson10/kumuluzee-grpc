@@ -30,7 +30,7 @@ import java.util.concurrent.Executor;
  * @author Primoz Hrovat
  * @since 1.0.0
  */
-public class JWTClientCredentials implements CallCredentials {
+public class JWTClientCredentials extends CallCredentials {
 
     private static final String AUTHORIZATION_HEADER = "Authorization";
     private String authorizationValue;
@@ -40,7 +40,7 @@ public class JWTClientCredentials implements CallCredentials {
     }
 
     @Override
-    public void applyRequestMetadata(MethodDescriptor<?, ?> methodDescriptor, Attributes attributes, Executor executor, MetadataApplier metadataApplier) {
+    public void applyRequestMetadata(RequestInfo requestInfo, Executor executor, MetadataApplier metadataApplier) {
         executor.execute(() -> {
             try {
                 Metadata headers = new Metadata();

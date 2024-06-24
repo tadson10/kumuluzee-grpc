@@ -20,9 +20,19 @@
  */
 package com.kumuluz.ee.grpc.server.auth;
 
+import com.auth0.jwt.JWT;
 import com.auth0.jwt.exceptions.JWTVerificationException;
+import com.auth0.jwt.interfaces.Claim;
+import com.auth0.jwt.interfaces.DecodedJWT;
+import com.kumuluz.ee.grpc.server.GrpcServer;
 import io.grpc.*;
 
+import javax.annotation.security.DenyAll;
+import javax.annotation.security.PermitAll;
+import javax.annotation.security.RolesAllowed;
+import java.lang.reflect.Method;
+import java.util.List;
+import java.util.Map;
 import java.util.logging.Logger;
 
 /***
@@ -56,10 +66,31 @@ public class JWTServerInterceptor implements ServerInterceptor {
         }
 
         if (authorization.startsWith("Bearer")) {
+            JWTContext jwtContext = JWTContext.getInstance();
+
             try {
                 String token = authorization.substring(7);
-                JWTAuthorization.validateToken(token, JWTContext.getInstance());
-            } catch (JWTVerificationException e) {
+                try {
+                    JWTAuthorization.validateToken(token, JWTContext.getInstance());
+                } catch (JWTVerificationException e) {
+                    serverCall.close(Status.UNAUTHENTICATED.withDescription("JWT token not valid."), metadata);
+                    return NOOP_LISTENER;
+                }
+
+                try {
+                    DecodedJWT jwt = JWT.decode(token);
+                    // Check if security annotations are required and
+                    // method is annotated with security annotations and if user has required roles in token
+                    if (!checkClientRolesForMethod(serverCall.getMethodDescriptor(), jwt)) {
+                        serverCall.close(Status.PERMISSION_DENIED.withDescription("Client has insufficient permissions."), metadata);
+                        return NOOP_LISTENER;
+                    }
+                } catch (Exception e) {
+                    logger.log(java.util.logging.Level.SEVERE, e.getMessage());
+                    serverCall.close(Status.PERMISSION_DENIED.withDescription("Insufficient permissions."), metadata);
+                    return NOOP_LISTENER;
+                }
+            } catch (Exception e) {
                 serverCall.close(Status.UNAUTHENTICATED.withDescription("JWT token not valid."), metadata);
                 return NOOP_LISTENER;
             }
@@ -74,5 +105,76 @@ public class JWTServerInterceptor implements ServerInterceptor {
         }
 
         return Contexts.interceptCall(context, serverCall, metadata, serverCallHandler);
+    }
+
+    /**
+     * Check if method is annotated with security annotations and if user has required roles in token.
+     *
+     * @param methodDescriptor MethodDescriptor
+     * @param jwt              DecodedJWT
+     * @return boolean
+     */
+    private static boolean checkClientRolesForMethod(MethodDescriptor<?, ?> methodDescriptor, DecodedJWT jwt) {
+        JWTContext context = JWTContext.getInstance();
+        String fullMethodName = methodDescriptor.getFullMethodName();
+        String serviceName = MethodDescriptor.extractFullServiceName(fullMethodName);
+        String methodName = fullMethodName.substring(serviceName.length() + 1);
+
+        String resourceName = context.getResourceName();
+        Map<String, Claim> claims = jwt.getClaims();
+        Map<String, Object> resourceAccess = null;
+        Claim roles = null;
+        if (claims != null) {
+            if (claims.containsKey("resource_access")) {
+                resourceAccess = claims.get("resource_access").asMap();
+            }
+            roles = claims.get("roles");
+        }
+
+        // If service doesn't have secure=true, then context.getMethods() will be empty for that service
+        Map<String, Map<String, Method>> serviceMethods = GrpcServer.getInstance().getServiceMethods();
+        if (!serviceMethods.containsKey(serviceName)) {
+            // If there is no method map for the service, permit access
+            // This means that security annotations are not required
+            return true;
+        } else {
+            Map<String, Method> methodMap = serviceMethods.get(serviceName);
+            if (methodMap.containsKey(methodName)) {
+                Method method = methodMap.get(methodName);
+                // If there is @DenyAll annotation on the method, deny access
+                if (method.isAnnotationPresent(DenyAll.class)) {
+                    return false;
+                }
+                // If there is @PermitAll annotation on the method, permit access
+                if (method.isAnnotationPresent(PermitAll.class)) {
+                    return true;
+                }
+                // If there is @RolesAllowed annotation on the method, check if user has required roles
+                if (method.isAnnotationPresent(RolesAllowed.class)) {
+                    for (String methodRole : method.getAnnotation(RolesAllowed.class).value()) {
+                        // Token has roles in resource_access
+                        // This is Keycloak token
+                        if (resourceAccess != null/* && !(resourceAccess instanceof NullClaim)*/) {
+                            // Check if resource_access contains the resource name
+                            if (resourceAccess.containsKey(resourceName)) {
+                                Map<?, ?> resource = (Map<?, ?>) resourceAccess.get(resourceName);
+                                List<?> resourceRoles = (List<?>) resource.get("roles");
+                                // Check if client has required role for the method
+                                if (resourceRoles != null && resourceRoles.contains(methodRole)) {
+                                    return true;
+                                }
+                            }
+                        }
+
+                        // There is no claim resource_access in a token
+                        if (roles != null /*&& !(roles instanceof NullClaim)*/ &&
+                            roles.asList(String.class).contains(methodRole)) {
+                            return true;
+                        }
+                    }
+                }
+            }
+        }
+        return false;
     }
 }

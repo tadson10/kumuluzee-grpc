@@ -30,6 +30,8 @@ public class GrpcChannelConfig {
 
     private String name;
     private String address;
+    private int keepAlive;
+    private int keepAliveTimeout;
     private int port;
     private String certFile;
     private String keyFile;
@@ -40,6 +42,8 @@ public class GrpcChannelConfig {
     public static class Builder {
         private String name;
         private String address;
+        private int keepAlive;
+        private int keepAliveTimeout;
         private int port;
         private String certFile;
         private String keyFile;
@@ -51,6 +55,14 @@ public class GrpcChannelConfig {
 
         public void address(String address) {
             this.address = address;
+        }
+
+        public void keepAlive(int keepAlive) {
+            this.keepAlive = keepAlive;
+        }
+
+        public void keepAliveTimeout(int keepAliveTimeout) {
+            this.keepAliveTimeout = keepAliveTimeout;
         }
 
         public void port(Integer port) {
@@ -74,6 +86,8 @@ public class GrpcChannelConfig {
 
             config.name = name;
             config.address = address;
+            config.keepAlive = keepAlive;
+            config.keepAliveTimeout = keepAliveTimeout;
             config.port = port;
             config.certFile = certFile;
             config.keyFile = keyFile;
@@ -108,5 +122,13 @@ public class GrpcChannelConfig {
 
     public String getTrustManager() {
         return trustManager;
+    }
+
+    public int getKeepAlive() {
+        return keepAlive;
+    }
+
+    public int getKeepAliveTimeout() {
+        return keepAliveTimeout;
     }
 }

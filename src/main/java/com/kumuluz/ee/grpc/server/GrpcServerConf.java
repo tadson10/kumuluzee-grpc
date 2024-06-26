@@ -46,13 +46,23 @@ public class GrpcServerConf {
     private ClientAuth mutualTLS;
 
     private Long timeout;
+    private Long permitKeepAliveTime;
+    private Long permitKeepAliveWithoutCalls;
+    private Long keepAliveTimeout;
+    private Long keepAliveTime;
+    private Long maxConnectionIdle;
+    private Long maxConnectionAge;
+    private Long maxConnectionAgeGrace;
 
-    public GrpcServerConf(int port, Long timeout) {
-        this(port, false, null, null, null, null, timeout);
+    public GrpcServerConf(int port, Long timeout, Long permitKeepAliveTime, Long permitKeepAliveWithoutCalls,
+                          Long keepAliveTimeout, Long keepAliveTime, Long maxConnectionIdle, Long maxConnectionAge, Long maxConnectionAgeGrace) {
+        this(port, false, null, null, null, null, timeout,
+            permitKeepAliveTime, permitKeepAliveWithoutCalls, keepAliveTimeout, keepAliveTime, maxConnectionIdle, maxConnectionAge, maxConnectionAgeGrace);
     }
 
     public GrpcServerConf(int port, boolean httpsEnabled, File certFile,
-                          File privateKeyFile, File chainFile, ClientAuth mutualTLS, Long timeout) {
+                          File privateKeyFile, File chainFile, ClientAuth mutualTLS, Long timeout, Long permitKeepAliveTime,
+                          Long permitKeepAliveWithoutCalls, Long keepAliveTimeout, Long keepAliveTime, Long maxConnectionIdle, Long maxConnectionAge, Long maxConnectionAgeGrace) {
         this.port = port;
         this.httpsEnabled = httpsEnabled;
         this.certFile = certFile;
@@ -60,6 +70,13 @@ public class GrpcServerConf {
         this.chainFile = chainFile;
         this.mutualTLS = mutualTLS;
         this.timeout = timeout;
+        this.permitKeepAliveTime = permitKeepAliveTime;
+        this.permitKeepAliveWithoutCalls = permitKeepAliveWithoutCalls;
+        this.keepAliveTimeout = keepAliveTimeout;
+        this.keepAliveTime = keepAliveTime;
+        this.maxConnectionIdle = maxConnectionIdle;
+        this.maxConnectionAge = maxConnectionAge;
+        this.maxConnectionAgeGrace = maxConnectionAgeGrace;
     }
 
     public int getPort() {
@@ -124,5 +141,61 @@ public class GrpcServerConf {
 
     public void setTimeout(Long timeout) {
         this.timeout = timeout;
+    }
+
+    public Long getPermitKeepAliveTime() {
+        return permitKeepAliveTime;
+    }
+
+    public void setPermitKeepAliveTime(Long permitKeepAliveTime) {
+        this.permitKeepAliveTime = permitKeepAliveTime;
+    }
+
+    public Long getPermitKeepAliveWithoutCalls() {
+        return permitKeepAliveWithoutCalls;
+    }
+
+    public void setPermitKeepAliveWithoutCalls(Long permitKeepAliveWithoutCalls) {
+        this.permitKeepAliveWithoutCalls = permitKeepAliveWithoutCalls;
+    }
+
+    public Long getKeepAliveTimeout() {
+        return keepAliveTimeout;
+    }
+
+    public void setKeepAliveTimeout(Long keepAliveTimeout) {
+        this.keepAliveTimeout = keepAliveTimeout;
+    }
+
+    public Long getKeepAliveTime() {
+        return keepAliveTime;
+    }
+
+    public void setKeepAliveTime(Long keepAliveTime) {
+        this.keepAliveTime = keepAliveTime;
+    }
+
+    public Long getMaxConnectionIdle() {
+        return maxConnectionIdle;
+    }
+
+    public void setMaxConnectionIdle(Long maxConnectionIdle) {
+        this.maxConnectionIdle = maxConnectionIdle;
+    }
+
+    public Long getMaxConnectionAge() {
+        return maxConnectionAge;
+    }
+
+    public void setMaxConnectionAge(Long maxConnectionAge) {
+        this.maxConnectionAge = maxConnectionAge;
+    }
+
+    public Long getMaxConnectionAgeGrace() {
+        return maxConnectionAgeGrace;
+    }
+
+    public void setMaxConnectionAgeGrace(Long maxConnectionAgeGrace) {
+        this.maxConnectionAgeGrace = maxConnectionAgeGrace;
     }
 }

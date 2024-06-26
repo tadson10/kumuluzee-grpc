@@ -63,6 +63,13 @@ public class GrpcServerInit {
 
         int port = setPort(confUtil);
         long timeout = setTimeout(confUtil);
+        long permitKeepAliveTime = confUtil.getLong("kumuluzee.grpc.server.conf.permitKeepAliveTime").orElse(0L);
+        long permitKeepAliveWithoutCalls = confUtil.getLong("kumuluzee.grpc.server.conf.permitKeepAliveWithoutCalls").orElse(0L);
+        long keepAliveTimeout = confUtil.getLong("kumuluzee.grpc.server.conf.keepAliveTimeout").orElse(0L);
+        long keepAliveTime = confUtil.getLong("kumuluzee.grpc.server.conf.keepAliveTime").orElse(0L);
+        long maxConnectionIdle = confUtil.getLong("kumuluzee.grpc.server.conf.maxConnectionIdle").orElse(0L);
+        long maxConnectionAge = confUtil.getLong("kumuluzee.grpc.server.conf.maxConnectionAge").orElse(0L);
+        long maxConnectionAgeGrace = confUtil.getLong("kumuluzee.grpc.server.conf.maxConnectionAgeGrace").orElse(0L);
 
         if (confUtil.getBoolean("kumuluzee.grpc.server.https.enable").orElse(false)) {
             Optional<String> certChainFile = confUtil.get("kumuluzee.grpc.server.https.certFile");
@@ -72,9 +79,11 @@ public class GrpcServerInit {
             keyFile = openFile(privateKeyFile);
             caFile = openFile(caCertFile);
             grpcServerConf = new GrpcServerConf(port, true, chainFile, keyFile, caFile,
-                    setClientAuth(confUtil), timeout);
+                setClientAuth(confUtil), timeout, permitKeepAliveTime, permitKeepAliveWithoutCalls, keepAliveTimeout,
+                keepAliveTime, maxConnectionIdle, maxConnectionAge, maxConnectionAgeGrace);
         } else {
-            grpcServerConf = new GrpcServerConf(port, timeout);
+            grpcServerConf = new GrpcServerConf(port, timeout, permitKeepAliveTime, permitKeepAliveWithoutCalls,
+                keepAliveTimeout, keepAliveTime, maxConnectionIdle, maxConnectionAge, maxConnectionAgeGrace);
         }
 
         Set<GrpcServiceDef> services = new HashSet<>();

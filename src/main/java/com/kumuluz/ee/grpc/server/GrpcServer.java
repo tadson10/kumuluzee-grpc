@@ -104,6 +104,35 @@ public class GrpcServer {
                     .forPort(conf.getPort());
         }
 
+        if (!conf.getPermitKeepAliveTime().equals(0L)) {
+            sb.permitKeepAliveTime(conf.getPermitKeepAliveTime(), TimeUnit.MILLISECONDS);
+        }
+
+        if (!conf.getPermitKeepAliveWithoutCalls().equals(0L)) {
+            sb.permitKeepAliveWithoutCalls(true);
+        }
+
+        if (!conf.getKeepAliveTimeout().equals(0L)) {
+            sb.keepAliveTimeout(conf.getKeepAliveTimeout(), TimeUnit.MILLISECONDS);
+        }
+
+        if (!conf.getKeepAliveTime().equals(0L)) {
+            sb.keepAliveTime(conf.getKeepAliveTime(), TimeUnit.MILLISECONDS);
+        }
+
+        if (!conf.getMaxConnectionIdle().equals(0L)) {
+            sb.maxConnectionIdle(conf.getMaxConnectionIdle(), TimeUnit.MILLISECONDS);
+        }
+
+        if (!conf.getMaxConnectionAge().equals(0L)) {
+            sb.maxConnectionAge(conf.getMaxConnectionAge(), TimeUnit.MILLISECONDS);
+        }
+
+        if (!conf.getMaxConnectionAgeGrace().equals(0L)) {
+            sb.maxConnectionAgeGrace(conf.getMaxConnectionAgeGrace(), TimeUnit.MILLISECONDS);
+        }
+
+
         bindServices(sb, conf.getServices());
 
         sb.handshakeTimeout(conf.getTimeout(), TimeUnit.SECONDS);

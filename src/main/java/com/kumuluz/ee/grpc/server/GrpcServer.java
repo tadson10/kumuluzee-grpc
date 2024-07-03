@@ -142,7 +142,7 @@ public class GrpcServer {
     }
 
     /**
-     * Check if security annotations are present on service implementation class
+     * Check if security annotations are required and present on service implementation class
      * Each method should have at least one security annotation present (DenyAll, PermitAll, RolesAllowed)
      * If not, throw an exception
      *

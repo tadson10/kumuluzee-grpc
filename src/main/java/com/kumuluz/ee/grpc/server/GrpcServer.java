@@ -148,8 +148,7 @@ public class GrpcServer {
      *
      */
     private void checkSecurityAnnotations() {
-        // List of all methods for each service
-        Map<String, Map<String, Method>> methods = new HashMap<>();
+        Map<String, String> resourceNames = new HashMap<>();
         conf.getServices().forEach(service -> {
             logger.info("Checking security annotations for service: " + service.getServiceName());
             String serviceClassName = service.getServiceName();
@@ -160,6 +159,12 @@ public class GrpcServer {
                 final String protoServiceName = serviceImplClass.getSuperclass().getEnclosingClass().getField("SERVICE_NAME").get(null).toString();
                 boolean isServiceSecured = serviceImplClass.getAnnotation(GrpcService.class).secured();
 
+                // Save service resource name, if not empty
+                String resourceName = serviceImplClass.getAnnotation(GrpcService.class).resourceName();
+                if (!resourceName.isEmpty()) {
+                    resourceNames.put(protoServiceName, resourceName);
+                }
+
                 // If service has secured=true, check if methods have security annotations
                 if (isServiceSecured) {
                     server.getServices().stream()
@@ -167,7 +172,7 @@ public class GrpcServer {
                         .findFirst()
                         .ifPresent(protoService -> {
                             logger.info("Proto service: " + serviceClassName);
-                            methods.put(protoServiceName, new HashMap<>());
+                            this.serviceMethods.put(protoServiceName, new HashMap<>());
 
                             // transform protoService.getMethods() to list of method names
                             List<String> methodNames = protoService.getMethods().stream()
@@ -183,7 +188,7 @@ public class GrpcServer {
                                 // Check if method belongs to service implementation class - based on proto file
                                 if (methodNames.contains(method.getName())) {
                                     serviceMethods.put(method.getName(), method);
-                                    methods.put(protoServiceName, serviceMethods);
+                                    this.serviceMethods.put(protoServiceName, serviceMethods);
                                     if (!method.isAnnotationPresent(DenyAll.class) && !method.isAnnotationPresent(PermitAll.class) && !method.isAnnotationPresent(RolesAllowed.class)) {
                                         throw new IllegalStateException("No security annotations (DenyAll, PermitAll, RolesAllowed) found on service implementation class. Service: " + serviceClassName + ", method: " + method.getName());
                                     }
@@ -195,10 +200,7 @@ public class GrpcServer {
                 throw new RuntimeException(e);
             }
         });
-
-        // Save service methods to context
-        JWTContext.getInstance().setMethods(methods);
-        this.serviceMethods = methods;
+        JWTContext.getInstance().setResourceNames(resourceNames);
     }
 
     /**

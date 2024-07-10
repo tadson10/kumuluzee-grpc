@@ -167,7 +167,7 @@ public class GrpcServerInit {
     }
 
     private ClientAuth setClientAuth(ConfigurationUtil confUtil) {
-        Optional<String> mutualTLS = confUtil.get("kumuluzee.grpc.server.mutualTLS");
+        Optional<String> mutualTLS = confUtil.get("kumuluzee.grpc.server.https.mutualTLS");
 
         if (mutualTLS.isPresent()) {
             switch (mutualTLS.get().toLowerCase()) {

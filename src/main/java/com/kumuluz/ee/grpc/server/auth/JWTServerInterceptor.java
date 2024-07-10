@@ -120,7 +120,7 @@ public class JWTServerInterceptor implements ServerInterceptor {
         String serviceName = MethodDescriptor.extractFullServiceName(fullMethodName);
         String methodName = fullMethodName.substring(serviceName.length() + 1);
 
-        String resourceName = context.getResourceName();
+        String resourceName = context.getResourceNames().get(serviceName);
         Map<String, Claim> claims = jwt.getClaims();
         Map<String, Object> resourceAccess = null;
         Claim roles = null;

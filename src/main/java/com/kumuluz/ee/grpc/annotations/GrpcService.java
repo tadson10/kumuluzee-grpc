@@ -37,5 +37,6 @@ public @interface GrpcService {
 
     GrpcInterceptor[] interceptors() default {};
     boolean secured() default false;
+    String resourceName() default "";
 
 }

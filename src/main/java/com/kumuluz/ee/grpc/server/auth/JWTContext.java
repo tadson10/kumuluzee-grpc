@@ -51,8 +51,7 @@ public class JWTContext {
     private Integer maximumLeeway;
     private String issuer;
     private DecodedJWT token;
-    private String resourceName;
-    private Map<String, Map<String, Method>> methods = new HashMap<>();
+    private Map<String, String> resourceNames = new HashMap<>();
 
     private static JWTContext instance;
     private static final ConfigurationUtil confUtil = ConfigurationUtil.getInstance();
@@ -73,7 +72,6 @@ public class JWTContext {
         instance.setJwksUri();
         instance.setJwkProvider();
         instance.setMaximumLeeway();
-        instance.setResourceName();
 
         return instance;
     }
@@ -114,10 +112,6 @@ public class JWTContext {
 
     public void setKeycloakJwksUri() {
         confUtil.get("kumuluzee.grpc.server.auth.keycloak-jwks-uri").ifPresent(s -> this.keycloakJwksUri = s);
-    }
-
-    public void setResourceName() {
-        confUtil.get("kumuluzee.grpc.server.auth.resource-name").ifPresent(s -> this.resourceName = s);
     }
 
     public void setJwkProvider() {
@@ -193,15 +187,11 @@ public class JWTContext {
         return keycloakJwksUri;
     }
 
-    public String getResourceName() {
-        return resourceName;
+    public Map<String, String> getResourceNames() {
+        return resourceNames;
     }
 
-    public Map<String, Map<String, Method>> getMethods() {
-        return methods;
-    }
-
-    public void setMethods(Map<String, Map<String, Method>> methods) {
-        this.methods = methods;
+    public void setResourceNames(Map<String, String> resourceNames) {
+        this.resourceNames = resourceNames;
     }
 }

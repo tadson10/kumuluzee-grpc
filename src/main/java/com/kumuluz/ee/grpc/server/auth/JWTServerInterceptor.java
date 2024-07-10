@@ -151,23 +151,23 @@ public class JWTServerInterceptor implements ServerInterceptor {
                 }
                 // If there is @RolesAllowed annotation on the method, check if user has required roles
                 if (method.isAnnotationPresent(RolesAllowed.class)) {
-                    for (String methodRole : method.getAnnotation(RolesAllowed.class).value()) {
+                    List<?> resourceRoles = null;
+                    if (resourceAccess != null) {
                         // Token has roles in resource_access
                         // This is Keycloak token
-                        if (resourceAccess != null/* && !(resourceAccess instanceof NullClaim)*/) {
-                            // Check if resource_access contains the resource name
-                            if (resourceAccess.containsKey(resourceName)) {
-                                Map<?, ?> resource = (Map<?, ?>) resourceAccess.get(resourceName);
-                                List<?> resourceRoles = (List<?>) resource.get("roles");
-                                // Check if client has required role for the method
-                                if (resourceRoles != null && resourceRoles.contains(methodRole)) {
-                                    return true;
-                                }
-                            }
+                        if (resourceAccess.containsKey(resourceName)) {
+                            // resource_access contains the resource name from config.yml
+                            Map<?, ?> resource = (Map<?, ?>) resourceAccess.get(resourceName);
+                            resourceRoles = (List<?>) resource.get("roles");
                         }
+                    }
 
-                        // There is no claim resource_access in a token
-                        if (roles != null /*&& !(roles instanceof NullClaim)*/ &&
+                    for (String methodRole : method.getAnnotation(RolesAllowed.class).value()) {
+                        // Token has roles in resource_access
+                        if (resourceRoles != null && resourceRoles.contains(methodRole)) {
+                            return true;
+                        } else if (resourceRoles == null &&
+                            roles != null &&
                             roles.asList(String.class).contains(methodRole)) {
                             return true;
                         }

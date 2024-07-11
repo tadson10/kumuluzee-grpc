@@ -22,7 +22,9 @@ Additionally for each service one or many interceptor(s) can be added. To bind i
 ```java
 @GrpcService(interceptors = {
         @GrpcInterceptor(name = "full.class.path.name"),
-        @GrpcInterceptor(name = "full.class.path.name2")
+        @GrpcInterceptor(name = "full.class.path.name2",
+        secured = true,
+        resourceName = "user-grpc")
 })
 public class GrpcServiceImpl extends ServiceGrpc.ServiceGrpcBaseImpl {
     // service implementation
@@ -30,7 +32,8 @@ public class GrpcServiceImpl extends ServiceGrpc.ServiceGrpcBaseImpl {
 ```
 
 Each service can be secured using JWT tokens. To enable call security, `security` parameter of @GrpcService annotation must be set to
-**true** (**false** by default). Public key and issuer must be provided in configuration file as follows:
+**true** (**false** by default). If we are using secured service with Keycloak generated JWT, we need to provide `resourceName`.
+Keycloak will add client roles in `resource_access` for each resource separately. Public key and issuer must be provided in configuration file as follows:
 
 ```yaml
 grpc:
@@ -39,6 +42,9 @@ grpc:
       public-key: MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAnOTgnGBISzm3pKuG8QXMVm6eEuTZx8Wqc8D9gy7vArzyE5QC/bVJNFwlz...
       issuer: http://example.org/auth
 ```
+
+When implementing secured service, we need to add `@RolesAllowed`, `@PermitAll` or `@DenyAll` annotations
+to each service method.
 
 More about gRPC protocol can be found on [webpage](https://grpc.io).
 gRPC implementation, tutorials and samples can be found [here](https://github.com/grpc/grpc-java).
@@ -86,16 +92,53 @@ kumuluzee:
         keyFile: /path/to/key/file
         chainFile: /path/to/chain/file
         mutualTLS: optional
+      conf:
+        permitKeepAliveTime: 60000
+        permitKeepAliveWithoutCalls: 10000
+        keepAliveTimeout: 60000
+        keepAliveTime: 60000
+        maxConnectionIdle: 10000
+        maxConnectionAge: 20000
+        maxConnectionAgeGrace: 10000
+      health:
+        healthCheckEnabled: true        
       auth:
+        maximum-leeway: 100
         public-key: MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAnOTgnGBISzm3pKuG8QXMVm6eEuTZx8Wqc8D9gy7vArzyE5QC/bVJNFwlz...
         issuer: http://example.org/auth
     clients:
     - name: client1
       port: 8081
       address: localhost
+      keepAlive: 1000 
+      keepAliveTimeout: 1000
       certFile: /path/to/cert/file
       keyFile: /path/to/key/file
       chainFile: /path/to/chain/file
+```
+The supplied public key can be in any of the following formats:
+- PKCS#8 PEM
+- JWK
+- JWKS
+- Base64 URL encoded JWK
+- Base64 URL encoded JWKS
+
+We can also use JWKS server to get public keys for JWT verification. In this case we need to provide JWKS server URL instead of public key.
+```yaml
+grpc:
+    server:
+        auth:
+            jwks-uri: http://localhost:8080/jwks
+            issuer: http://localhost
+```
+
+We can use even Keycloak server to get public keys for JWT verification. In this case we need to provide Keycloak server URL instead of public key.
+```yaml
+grpc:
+    server:
+        auth:
+            keycloak-jwks-uri: http://localhost:8090/realms/master/protocol/openid-connect/certs
+            issuer: http://localhost
 ```
 
 Example shows all available options for extension. Required fields are:

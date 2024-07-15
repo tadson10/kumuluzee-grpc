@@ -64,7 +64,7 @@ public class GrpcServerInit {
         int port = setPort(confUtil);
         long timeout = setTimeout(confUtil);
         long permitKeepAliveTime = confUtil.getLong("kumuluzee.grpc.server.conf.permitKeepAliveTime").orElse(0L);
-        long permitKeepAliveWithoutCalls = confUtil.getLong("kumuluzee.grpc.server.conf.permitKeepAliveWithoutCalls").orElse(0L);
+        boolean permitKeepAliveWithoutCalls = confUtil.getBoolean("kumuluzee.grpc.server.conf.permitKeepAliveWithoutCalls").orElse(false);
         long keepAliveTimeout = confUtil.getLong("kumuluzee.grpc.server.conf.keepAliveTimeout").orElse(0L);
         long keepAliveTime = confUtil.getLong("kumuluzee.grpc.server.conf.keepAliveTime").orElse(0L);
         long maxConnectionIdle = confUtil.getLong("kumuluzee.grpc.server.conf.maxConnectionIdle").orElse(0L);

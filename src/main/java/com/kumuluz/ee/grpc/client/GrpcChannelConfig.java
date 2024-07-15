@@ -32,6 +32,7 @@ public class GrpcChannelConfig {
     private String address;
     private int keepAlive;
     private int keepAliveTimeout;
+    private boolean keepAliveWithoutCalls;
     private int port;
     private String certFile;
     private String keyFile;
@@ -44,6 +45,7 @@ public class GrpcChannelConfig {
         private String address;
         private int keepAlive;
         private int keepAliveTimeout;
+        private boolean keepAliveWithoutCalls;
         private int port;
         private String certFile;
         private String keyFile;
@@ -63,6 +65,10 @@ public class GrpcChannelConfig {
 
         public void keepAliveTimeout(int keepAliveTimeout) {
             this.keepAliveTimeout = keepAliveTimeout;
+        }
+
+        public void keepAliveWithoutCalls(boolean keepAliveWithoutCalls) {
+            this.keepAliveWithoutCalls = keepAliveWithoutCalls;
         }
 
         public void port(Integer port) {
@@ -88,6 +94,7 @@ public class GrpcChannelConfig {
             config.address = address;
             config.keepAlive = keepAlive;
             config.keepAliveTimeout = keepAliveTimeout;
+            config.keepAliveWithoutCalls = keepAliveWithoutCalls;
             config.port = port;
             config.certFile = certFile;
             config.keyFile = keyFile;
@@ -130,5 +137,9 @@ public class GrpcChannelConfig {
 
     public int getKeepAliveTimeout() {
         return keepAliveTimeout;
+    }
+
+    public boolean getKeepAliveWithoutCalls() {
+        return keepAliveWithoutCalls;
     }
 }

@@ -102,6 +102,9 @@ public class GrpcClient {
         if (config.getKeepAliveTimeout() > 0) {
             managedChannelBuilder.keepAliveTimeout(config.getKeepAliveTimeout(), TimeUnit.MILLISECONDS);
         }
+        if (config.getKeepAliveWithoutCalls()) {
+            managedChannelBuilder.keepAliveWithoutCalls(config.getKeepAliveWithoutCalls());
+        }
 
         channel = managedChannelBuilder.build();
     }

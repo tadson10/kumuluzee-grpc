@@ -53,6 +53,7 @@ public class GrpcChannels {
                     Optional<String> address = confUtil.get("kumuluzee.grpc.clients[" + i + "].address");
                     Optional<Integer> keepAlive = confUtil.getInteger("kumuluzee.grpc.clients[" + i + "].keepAlive");
                     Optional<Integer> keepAliveTimeout = confUtil.getInteger("kumuluzee.grpc.clients[" + i + "].keepAliveTimeout");
+                    Optional<Boolean> keepAliveWithoutCalls = confUtil.getBoolean("kumuluzee.grpc.clients[" + i + "].keepAliveWithoutCalls");
                     Optional<Integer> port = confUtil.getInteger("kumuluzee.grpc.clients[" + i + "].port");
                     Optional<String> cert = confUtil.get("kumuluzee.grpc.clients[" + i + "].certFile");
                     Optional<String> key = confUtil.get("kumuluzee.grpc.clients[" + i + "].keyFile");
@@ -62,6 +63,7 @@ public class GrpcChannels {
                     address.ifPresent(gcc::address);
                     keepAlive.ifPresent(gcc::keepAlive);
                     keepAliveTimeout.ifPresent(gcc::keepAliveTimeout);
+                    keepAliveWithoutCalls.ifPresent(gcc::keepAliveWithoutCalls);
                     port.ifPresent(gcc::port);
                     cert.ifPresent(gcc::certFile);
                     key.ifPresent(gcc::keyFile);

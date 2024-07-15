@@ -108,8 +108,8 @@ public class GrpcServer {
             sb.permitKeepAliveTime(conf.getPermitKeepAliveTime(), TimeUnit.MILLISECONDS);
         }
 
-        if (!conf.getPermitKeepAliveWithoutCalls().equals(0L)) {
-            sb.permitKeepAliveWithoutCalls(true);
+        if (conf.getPermitKeepAliveWithoutCalls()) {
+            sb.permitKeepAliveWithoutCalls(conf.getPermitKeepAliveWithoutCalls());
         }
 
         if (!conf.getKeepAliveTimeout().equals(0L)) {

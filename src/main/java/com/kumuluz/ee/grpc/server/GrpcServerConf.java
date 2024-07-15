@@ -47,14 +47,14 @@ public class GrpcServerConf {
 
     private Long timeout;
     private Long permitKeepAliveTime;
-    private Long permitKeepAliveWithoutCalls;
+    private boolean permitKeepAliveWithoutCalls;
     private Long keepAliveTimeout;
     private Long keepAliveTime;
     private Long maxConnectionIdle;
     private Long maxConnectionAge;
     private Long maxConnectionAgeGrace;
 
-    public GrpcServerConf(int port, Long timeout, Long permitKeepAliveTime, Long permitKeepAliveWithoutCalls,
+    public GrpcServerConf(int port, Long timeout, Long permitKeepAliveTime, boolean permitKeepAliveWithoutCalls,
                           Long keepAliveTimeout, Long keepAliveTime, Long maxConnectionIdle, Long maxConnectionAge, Long maxConnectionAgeGrace) {
         this(port, false, null, null, null, null, timeout,
             permitKeepAliveTime, permitKeepAliveWithoutCalls, keepAliveTimeout, keepAliveTime, maxConnectionIdle, maxConnectionAge, maxConnectionAgeGrace);
@@ -62,7 +62,7 @@ public class GrpcServerConf {
 
     public GrpcServerConf(int port, boolean httpsEnabled, File certFile,
                           File privateKeyFile, File chainFile, ClientAuth mutualTLS, Long timeout, Long permitKeepAliveTime,
-                          Long permitKeepAliveWithoutCalls, Long keepAliveTimeout, Long keepAliveTime, Long maxConnectionIdle, Long maxConnectionAge, Long maxConnectionAgeGrace) {
+                          boolean permitKeepAliveWithoutCalls, Long keepAliveTimeout, Long keepAliveTime, Long maxConnectionIdle, Long maxConnectionAge, Long maxConnectionAgeGrace) {
         this.port = port;
         this.httpsEnabled = httpsEnabled;
         this.certFile = certFile;
@@ -151,11 +151,11 @@ public class GrpcServerConf {
         this.permitKeepAliveTime = permitKeepAliveTime;
     }
 
-    public Long getPermitKeepAliveWithoutCalls() {
+    public boolean getPermitKeepAliveWithoutCalls() {
         return permitKeepAliveWithoutCalls;
     }
 
-    public void setPermitKeepAliveWithoutCalls(Long permitKeepAliveWithoutCalls) {
+    public void setPermitKeepAliveWithoutCalls(boolean permitKeepAliveWithoutCalls) {
         this.permitKeepAliveWithoutCalls = permitKeepAliveWithoutCalls;
     }
 

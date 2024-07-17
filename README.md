@@ -94,7 +94,7 @@ kumuluzee:
         mutualTLS: optional
       conf:
         permitKeepAliveTime: 60000
-        permitKeepAliveWithoutCalls: 10000
+        permitKeepAliveWithoutCalls: true
         keepAliveTimeout: 60000
         keepAliveTime: 60000
         maxConnectionIdle: 10000
@@ -112,6 +112,7 @@ kumuluzee:
       address: localhost
       keepAlive: 1000 
       keepAliveTimeout: 1000
+      keepAliveWithoutCalls: true
       certFile: /path/to/cert/file
       keyFile: /path/to/key/file
       chainFile: /path/to/chain/file

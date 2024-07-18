@@ -35,6 +35,7 @@ import io.grpc.netty.shaded.io.netty.handler.ssl.SslContextBuilder;
 import io.grpc.netty.shaded.io.netty.handler.ssl.SslProvider;
 import io.grpc.protobuf.services.HealthStatusManager;
 import com.kumuluz.ee.configuration.utils.ConfigurationUtil;
+import io.grpc.protobuf.services.ProtoReflectionService;
 
 import javax.annotation.security.DenyAll;
 import javax.annotation.security.PermitAll;
@@ -236,6 +237,11 @@ public class GrpcServer {
 
         if (healthCheckEnabled) {
             sb.addService(healthStatusManager.getHealthService());
+        }
+
+        boolean reflectionEnabled = confUtil.getBoolean("kumuluzee.grpc.server.reflection.reflectionEnabled").orElse(false);
+        if (reflectionEnabled) {
+            sb.addService(ProtoReflectionService.newInstance());
         }
     }
 

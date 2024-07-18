@@ -101,7 +101,9 @@ kumuluzee:
         maxConnectionAge: 20000
         maxConnectionAgeGrace: 10000
       health:
-        healthCheckEnabled: true        
+        healthCheckEnabled: true  
+      reflection:
+        reflectionEnabled: true        
       auth:
         maximum-leeway: 100
         public-key: MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAnOTgnGBISzm3pKuG8QXMVm6eEuTZx8Wqc8D9gy7vArzyE5QC/bVJNFwlz...
